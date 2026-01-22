@@ -38,22 +38,14 @@ REM Check/create .env file
 if not exist "%ENV_FILE%" (
     echo [WARNING] .env file not found. Creating one...
     echo.
-    echo Which API key do you want to use?
-    echo 1) OpenAI API Key (OPENAI_API_KEY)
-    echo 2) OpenRouter API Key (OPENROUTER_API_KEY)
-    set /p KEY_CHOICE="Enter choice (1 or 2): "
-    set /p API_KEY="Enter your API Key: "
+    echo Enter your OpenRouter API key:
+    set /p API_KEY="OPENROUTER_API_KEY: "
     if "!API_KEY!"=="" (
         echo [ERROR] API key cannot be empty. Exiting.
         exit /b 1
     )
-    if "!KEY_CHOICE!"=="2" (
-        echo OPENROUTER_API_KEY=!API_KEY! > "%ENV_FILE%"
-        echo [OK] .env file created with OPENROUTER_API_KEY
-    ) else (
-        echo OPENAI_API_KEY=!API_KEY! > "%ENV_FILE%"
-        echo [OK] .env file created with OPENAI_API_KEY
-    )
+    echo OPENROUTER_API_KEY=!API_KEY! > "%ENV_FILE%"
+    echo [OK] .env file created with OPENROUTER_API_KEY
 ) else (
     echo [OK] .env file exists
 )

@@ -25,10 +25,8 @@ run_docker.bat
 
 **Using Docker Compose (Easiest):**
 ```bash
-# 1. Create .env file with your API key (OpenAI or OpenRouter)
-echo "OPENAI_API_KEY=your_key_here" > .env
-# OR for OpenRouter:
-# echo "OPENROUTER_API_KEY=your_key_here" > .env
+# 1. Create .env file with your OpenRouter API key
+echo "OPENROUTER_API_KEY=your_key_here" > .env
 
 # 2. Build and run
 docker-compose up -d --build
@@ -39,10 +37,8 @@ open http://localhost:8501
 
 **Using Docker CLI:**
 ```bash
-# 1. Create .env file (OpenAI or OpenRouter)
-echo "OPENAI_API_KEY=your_key_here" > .env
-# OR for OpenRouter:
-# echo "OPENROUTER_API_KEY=your_key_here" > .env
+# 1. Create .env file with your OpenRouter API key
+echo "OPENROUTER_API_KEY=your_key_here" > .env
 
 # 2. Build image
 docker build -t rag-4-scratch:latest .
@@ -59,9 +55,7 @@ open http://localhost:8501
 ## Prerequisites
 
 - Docker installed on your system ([Download Docker](https://www.docker.com/products/docker-desktop))
-- **API Key** (choose one):
-  - OpenAI API key (if you plan to use OpenAI models)
-  - **OpenRouter API key** (if you plan to use OpenRouter - supports multiple providers like OpenAI, Anthropic, Google, etc.)
+- **OpenRouter API key** (supports multiple providers like OpenAI, Anthropic, Google, etc.)
 - Optional: HuggingFace token (if you plan to use HuggingFace models)
 
 ---
@@ -117,14 +111,9 @@ Create a `.env` file in the project root:
 touch .env
 ```
 
-Edit the `.env` file and add your API keys. **Choose one of the following:**
+Edit the `.env` file and add your API keys:
 
-**Option A: OpenAI**
-```bash
-OPENAI_API_KEY=your_openai_api_key_here
-```
-
-**Option B: OpenRouter** (recommended if you want access to multiple providers)
+**OpenRouter** (recommended if you want access to multiple providers)
 ```bash
 OPENROUTER_API_KEY=your_openrouter_api_key_here
 ```
@@ -136,10 +125,9 @@ HUGGINGFACE_API_TOKEN=your_hf_token_here
 ```
 
 **Notes:**
-- Replace `your_openai_api_key_here` with your actual OpenAI API key, OR
 - Replace `your_openrouter_api_key_here` with your OpenRouter API key (starts with `sk-or-...`)
 - **OpenRouter** is OpenAI-compatible and supports multiple providers (OpenAI, Anthropic, Google, etc.)
-- The automated scripts (`run_docker.sh`, `run_docker.bat`) will prompt you to choose which key to use
+- The automated scripts (`run_docker.sh`, `run_docker.bat`) will prompt you for the OpenRouter key if missing
 
 ### Step 3: Build and Run with Docker Compose
 
@@ -206,14 +194,14 @@ touch .env
 Edit the `.env` file and add your API keys:
 
 ```bash
-# Required if using OpenAI models
-OPENAI_API_KEY=your_openai_api_key_here
+# Required for OpenRouter models
+OPENROUTER_API_KEY=your_openrouter_api_key_here
 
 # Optional: Required if using HuggingFace private models
 # HUGGINGFACE_API_TOKEN=your_hf_token_here
 ```
 
-**Note:** Replace `your_openai_api_key_here` with your actual OpenAI API key.
+**Note:** Replace `your_openrouter_api_key_here` with your actual OpenRouter API key.
 
 ### Step 3: Build the Docker Image
 
@@ -365,10 +353,8 @@ If you want to do everything in one go:
 # Navigate to project
 cd /Users/sahayamuthukanignanadurai/RAG_4_Scratch
 
-# Create .env file (edit with your API key - OpenAI or OpenRouter)
-echo "OPENAI_API_KEY=your_key_here" > .env
-# OR for OpenRouter:
-# echo "OPENROUTER_API_KEY=your_key_here" > .env
+# Create .env file (edit with your OpenRouter API key)
+echo "OPENROUTER_API_KEY=your_key_here" > .env
 
 # Build image
 docker build -t rag-4-scratch:latest .
@@ -384,7 +370,7 @@ Then open `http://localhost:8501` in your browser.
 
 ---
 
-## Using OpenRouter Instead of OpenAI
+## Using OpenRouter
 
 **OpenRouter** is an OpenAI-compatible API that provides access to multiple LLM providers (OpenAI, Anthropic, Google, etc.) through a single API.
 
@@ -413,13 +399,13 @@ Then open `http://localhost:8501` in your browser.
      - `google/gemini-pro` (Google models)
      - See [https://openrouter.ai/models](https://openrouter.ai/models) for full list
 
-4. **Note:** The code will automatically use `OPENROUTER_API_KEY` if set, or fall back to `OPENAI_API_KEY` if OpenRouter provider is selected.
+4. **Note:** The code uses `OPENROUTER_API_KEY` for OpenRouter requests.
 
 ## Next Steps
 
 After the application is running:
 
-1. **Configuration Page** - Set up your LLM provider (OpenAI, OpenRouter, or HuggingFace), embedding model, and data folders
+1. **Configuration Page** - Set up your LLM provider (OpenRouter or HuggingFace), embedding model, and data folders
 2. **Vector DB Builder** - Load your JSON data and create the FAISS vector database
 3. **Chatbot Q&A** - Start chatting with your RAG chatbot
 4. **RAG Evaluation** - Evaluate your RAG system's performance

@@ -103,62 +103,35 @@ main() {
     if [ ! -f "${ENV_FILE}" ]; then
         print_warning ".env file not found. Creating one..."
         echo ""
-        echo "Which API key do you want to use?"
-        echo "1) OpenAI API Key (OPENAI_API_KEY)"
-        echo "2) OpenRouter API Key (OPENROUTER_API_KEY)"
-        read -p "Enter choice (1 or 2): " key_choice
-        
-        read -p "Enter your API Key: " api_key
+        echo "Enter your OpenRouter API key:"
+        read -p "OPENROUTER_API_KEY: " api_key
         if [ -z "$api_key" ]; then
             print_error "API key cannot be empty. Exiting."
             exit 1
         fi
-        
-        if [ "$key_choice" = "2" ]; then
-            echo "OPENROUTER_API_KEY=${api_key}" > "${ENV_FILE}"
-            print_success ".env file created with OPENROUTER_API_KEY"
-        else
-            echo "OPENAI_API_KEY=${api_key}" > "${ENV_FILE}"
-            print_success ".env file created with OPENAI_API_KEY"
-        fi
+        echo "OPENROUTER_API_KEY=${api_key}" > "${ENV_FILE}"
+        print_success ".env file created with OPENROUTER_API_KEY"
     else
         # Check if any API key is set
-        has_openai=$(grep -q "OPENAI_API_KEY=" "${ENV_FILE}" && ! grep -q "OPENAI_API_KEY=$" "${ENV_FILE}" && ! grep -q "OPENAI_API_KEY=your" "${ENV_FILE}" && echo "yes" || echo "no")
         has_openrouter=$(grep -q "OPENROUTER_API_KEY=" "${ENV_FILE}" && ! grep -q "OPENROUTER_API_KEY=$" "${ENV_FILE}" && ! grep -q "OPENROUTER_API_KEY=your" "${ENV_FILE}" && echo "yes" || echo "no")
         
-        if [ "$has_openai" = "no" ] && [ "$has_openrouter" = "no" ]; then
-            print_warning "No valid API key found in .env file"
+        if [ "$has_openrouter" = "no" ]; then
+            print_warning "No valid OpenRouter API key found in .env file"
             echo ""
-            echo "Which API key do you want to use?"
-            echo "1) OpenAI API Key (OPENAI_API_KEY)"
-            echo "2) OpenRouter API Key (OPENROUTER_API_KEY)"
-            read -p "Enter choice (1 or 2): " key_choice
-            
-            read -p "Enter your API Key: " api_key
+            echo "Enter your OpenRouter API key:"
+            read -p "OPENROUTER_API_KEY: " api_key
             if [ -z "$api_key" ]; then
                 print_error "API key cannot be empty. Exiting."
                 exit 1
             fi
-            
-            if [ "$key_choice" = "2" ]; then
-                if grep -q "OPENROUTER_API_KEY=" "${ENV_FILE}"; then
-                    sed -i.bak "s/OPENROUTER_API_KEY=.*/OPENROUTER_API_KEY=${api_key}/" "${ENV_FILE}"
-                else
-                    echo "OPENROUTER_API_KEY=${api_key}" >> "${ENV_FILE}"
-                fi
-                print_success "OPENROUTER_API_KEY updated in .env file"
+
+            if grep -q "OPENROUTER_API_KEY=" "${ENV_FILE}"; then
+                sed -i.bak "s/OPENROUTER_API_KEY=.*/OPENROUTER_API_KEY=${api_key}/" "${ENV_FILE}"
             else
-                if grep -q "OPENAI_API_KEY=" "${ENV_FILE}"; then
-                    sed -i.bak "s/OPENAI_API_KEY=.*/OPENAI_API_KEY=${api_key}/" "${ENV_FILE}"
-                else
-                    echo "OPENAI_API_KEY=${api_key}" >> "${ENV_FILE}"
-                fi
-                print_success "OPENAI_API_KEY updated in .env file"
+                echo "OPENROUTER_API_KEY=${api_key}" >> "${ENV_FILE}"
             fi
+            print_success "OPENROUTER_API_KEY updated in .env file"
         else
-            if [ "$has_openai" = "yes" ]; then
-                print_success ".env file exists and contains OPENAI_API_KEY"
-            fi
             if [ "$has_openrouter" = "yes" ]; then
                 print_success ".env file exists and contains OPENROUTER_API_KEY"
             fi

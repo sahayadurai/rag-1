@@ -3,7 +3,13 @@ import os
 import streamlit as st
 from dotenv import load_dotenv
 
-# Load env vars from .env (OPENAI_API_KEY, etc.)
+# Load env vars from .env (OPENROUTER_API_KEY, etc.)
+import os
+
+import streamlit as st
+from dotenv import load_dotenv
+
+# Load env vars from .env (OPENROUTER_API_KEY, etc.)
 load_dotenv()
 
 st.set_page_config(
@@ -14,12 +20,12 @@ st.set_page_config(
 
 st.title("🧠 Agentic RAG Playground (LangChain)")
 
-if os.getenv("OPENAI_API_KEY"):
-    st.caption("🔑 OPENAI_API_KEY loaded from .env")
+if os.getenv("OPENROUTER_API_KEY"):
+    st.caption("🔑 OPENROUTER_API_KEY loaded from .env")
 else:
     st.warning(
-        "OPENAI_API_KEY not found in environment. "
-        "Set it in your .env file if you want to use OpenAI."
+        "OPENROUTER_API_KEY not found in environment. "
+        "Set it in your .env file if you want to use OpenRouter."
     )
 
 st.markdown(

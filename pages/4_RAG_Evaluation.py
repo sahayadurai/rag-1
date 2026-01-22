@@ -126,28 +126,33 @@ def build_ragas_dataset_from_chats(chat_db: List[Dict[str, Any]]) -> Dataset:
 
 
 # ---------------------------------------------------------------------
-# Ragas evaluation models (OpenAI via LangChain)
+# Ragas evaluation models (OpenRouter via LangChain)
 # ---------------------------------------------------------------------
 def get_ragas_models():
     """
     Create LangChain LLM + embeddings for Ragas to use.
 
     Uses:
-      - ChatOpenAI("gpt-4o-mini")
+      - ChatOpenAI("openai/gpt-4o-mini")
       - OpenAIEmbeddings("text-embedding-3-small")
     """
-    if not os.getenv("OPENAI_API_KEY"):
+    if not os.getenv("OPENROUTER_API_KEY"):
         raise RuntimeError(
-            "OPENAI_API_KEY is not set. Please add it to your .env "
+            "OPENROUTER_API_KEY is not set. Please add it to your .env "
             "or environment before running RAGAS evaluation."
         )
 
+    api_key = os.getenv("OPENROUTER_API_KEY")
     eval_llm = ChatOpenAI(
-        model="gpt-4o-mini",
+        model="openai/gpt-4o-mini",
         temperature=0.0,
+        api_key=api_key,
+        base_url="https://openrouter.ai/api/v1",
     )
     eval_embeddings = OpenAIEmbeddings(
         model="text-embedding-3-small",
+        api_key=api_key,
+        base_url="https://openrouter.ai/api/v1",
     )
     return eval_llm, eval_embeddings
 

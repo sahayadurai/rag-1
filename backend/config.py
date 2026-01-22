@@ -26,14 +26,14 @@ class RAGConfig:
     """
 
     # ---------------- LLM ----------------
-    # "openai"       -> ChatOpenAI (needs OPENAI_API_KEY)
+    # "openrouter"   -> OpenRouter (needs OPENROUTER_API_KEY)
     # "huggingface"  -> HuggingFaceEndpoint / ChatHuggingFace (needs HF token for private models)
-    llm_provider: str = "openai"
-    llm_model_name: str = "gpt-4o-mini"
+    llm_provider: str = "openrouter"
+    llm_model_name: str = "openai/gpt-4o-mini"
 
     # ---------------- Embeddings ----------------
     # "huggingface" -> HuggingFaceEmbeddings (any HF model or local path)
-    # "openai"      -> OpenAIEmbeddings
+    # "openrouter"  -> OpenAIEmbeddings (OpenRouter OpenAI-compatible API)
     embedding_provider: str = "huggingface"
     embedding_model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
 

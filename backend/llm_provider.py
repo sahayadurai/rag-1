@@ -20,7 +20,7 @@ class LLMBackend:
     """
     Unified interface for LLM providers:
 
-      - openai       → ChatOpenAI
+      - openrouter   → ChatOpenAI (OpenAI-compatible via OpenRouter)
       - huggingface  → HuggingFaceEndpoint + ChatHuggingFace
 
     Hugging Face notes:
@@ -37,13 +37,19 @@ class LLMBackend:
         self.temperature = 0.2
 
     # ------------------------------------------------------------------
-    # OPENAI
+    # OPENROUTER (OpenAI-compatible)
     # ------------------------------------------------------------------
-    def _build_openai_chat(self) -> BaseChatModel:
-        # Requires OPENAI_API_KEY in env
+    def _build_openrouter_chat(self) -> Optional[BaseChatModel]:
+        api_key = os.getenv("OPENROUTER_API_KEY")
+        if not api_key:
+            print("[LLMBackend] OPENROUTER_API_KEY not set.")
+            return None
+
         return ChatOpenAI(
             model=self.config.llm_model_name,
             temperature=self.temperature,
+            api_key=api_key,
+            base_url="https://openrouter.ai/api/v1",
         )
 
     # ------------------------------------------------------------------
@@ -88,8 +94,8 @@ class LLMBackend:
     def get_langchain_llm(self) -> Optional[BaseChatModel]:
         provider = self.config.llm_provider
 
-        if provider == "openai":
-            return self._build_openai_chat()
+        if provider in {"openrouter", "openai"}:
+            return self._build_openrouter_chat()
 
         if provider == "huggingface":
             return self._build_hf_chat()
@@ -109,7 +115,7 @@ class LLMBackend:
                 "- If provider = **huggingface**, set `llm_model_name` to a valid "
                 "Hugging Face repo id (e.g. `mistralai/Mistral-7B-Instruct-v0.3`) and "
                 "set `HUGGINGFACEHUB_API_TOKEN` in `.env` for private/gated models.\n"
-                "- If provider = **openai**, make sure `OPENAI_API_KEY` is set."
+                "- If provider = **openrouter**, make sure `OPENROUTER_API_KEY` is set."
             )
 
         try:
@@ -127,6 +133,14 @@ class LLMBackend:
             except Exception as e:
                 return f"[LLM error] {e}"
         except Exception as e:
+            msg = str(e)
+            if "No endpoints found matching your data policy" in msg:
+                return (
+                    "[LLM error] OpenRouter blocked the request because your "
+                    "account data policy only allows free models. "
+                    "Update your data policy at https://openrouter.ai/settings/privacy "
+                    "or choose a model that matches your policy (see https://openrouter.ai/models)."
+                )
             return f"[LLM error] {e}"
 
         if hasattr(resp, "content"):

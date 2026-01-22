@@ -1,6 +1,6 @@
 # ======================================================================
 # pages/1_Configuration.py
-# Global configuration for the Agentic RAG app (OpenAI + HuggingFace)
+# Global configuration for the Agentic RAG app (OpenRouter + HuggingFace)
 # ======================================================================
 import streamlit as st
 
@@ -25,12 +25,12 @@ col1, col2 = st.columns(2)
 with col1:
     config.llm_provider = st.selectbox(
         "LLM Provider",
-        options=["openai", "huggingface"],
-        index=["openai", "huggingface"].index(config.llm_provider)
-        if config.llm_provider in ["openai", "huggingface"]
+        options=["openrouter", "huggingface"],
+        index=["openrouter", "huggingface"].index(config.llm_provider)
+        if config.llm_provider in ["openrouter", "huggingface"]
         else 0,
         help=(
-            "- **openai**: uses ChatOpenAI (needs `OPENAI_API_KEY` in `.env`).\n"
+            "- **openrouter**: uses OpenRouter (needs `OPENROUTER_API_KEY` in `.env`).\n"
             "- **huggingface**: any HF generative model (hub id or local path)."
         ),
     )
@@ -40,7 +40,7 @@ with col2:
         "LLM Model Name or Path",
         value=config.llm_model_name,
         help=(
-            "For OpenAI: e.g. `gpt-4o-mini`.\n"
+            "For OpenRouter: e.g. `openai/gpt-4o-mini`.\n"
             "For Hugging Face: model id (e.g. `meta-llama/Llama-3.1-8B-Instruct`) "
             "or a local folder path."
         ),
@@ -54,13 +54,13 @@ col3, col4 = st.columns(2)
 with col3:
     config.embedding_provider = st.selectbox(
         "Embedding Provider",
-        options=["huggingface", "openai"],
-        index=["huggingface", "openai"].index(config.embedding_provider)
-        if config.embedding_provider in ["huggingface", "openai"]
+        options=["huggingface", "openrouter"],
+        index=["huggingface", "openrouter"].index(config.embedding_provider)
+        if config.embedding_provider in ["huggingface", "openrouter"]
         else 0,
         help=(
             "huggingface → `HuggingFaceEmbeddings` (any HF model or local path).\n"
-            "openai → `OpenAIEmbeddings` (e.g. `text-embedding-3-small`)."
+            "openrouter → `OpenAIEmbeddings` via OpenRouter (e.g. `text-embedding-3-small`)."
         ),
     )
 
@@ -71,7 +71,7 @@ with col4:
         help=(
             "For Hugging Face: e.g. `all-MiniLM-L6-v2`, `sentence-transformers/all-mpnet-base-v2`, "
             "or a local path.\n"
-            "For OpenAI: e.g. `text-embedding-3-small`."
+            "For OpenRouter: e.g. `text-embedding-3-small`."
         ),
     )
 

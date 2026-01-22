@@ -14,8 +14,6 @@ echo "🚀 Quick Starting RAG_4_Scratch..."
 if [ ! -f ".env" ]; then
     echo "❌ .env file not found!"
     echo "Please create .env file with:"
-    echo "  OPENAI_API_KEY=your_key_here"
-    echo "  OR"
     echo "  OPENROUTER_API_KEY=your_key_here"
     exit 1
 fi
