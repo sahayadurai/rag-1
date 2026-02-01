@@ -8,7 +8,7 @@ from langchain_core.documents import Document
 from .config import RAGConfig
 from .rag_single_agent import single_agent_answer_question
 from .rag_multiagent import multiagent_answer_question
-# RIMOSSO: from .hybrid_rag import hybrid_answer_question  <-- Cancellare questa riga
+from .hybrid_rag import hybrid_answer_question  
 
 
 def answer_question(
@@ -19,16 +19,18 @@ def answer_question(
     """
     Public entrypoint used by the Chatbot interface.
     """
-    
-    # Multi-agent mode
+
+    # 1) Hybrid mode (metadata filtering + vector similarity)
+    if getattr(config, "agentic_mode", "") == "hybrid_rag":
+        answer, docs, reasoning, meta = hybrid_answer_question(question, config, show_reasoning)
+        return answer, docs, reasoning, meta
+
+    # 2) Multi-agent mode
     if getattr(config, "use_multiagent", False):
-        answer, docs, reasoning = multiagent_answer_question(
-            question, config, show_reasoning
-        )
+        answer, docs, reasoning = multiagent_answer_question(question, config, show_reasoning)
         return answer, docs, reasoning, None
-    
-    # Single-agent mode (ReAct)
-    answer, docs, reasoning = single_agent_answer_question(
-        question, config, show_reasoning
-    )
+
+    # 3) Single-agent mode (ReAct)
+    answer, docs, reasoning = single_agent_answer_question(question, config, show_reasoning)
     return answer, docs, reasoning, None
+
