@@ -1,0 +1,54 @@
+{
+  "queries": [
+    {
+      "id": 1,
+      "question": "In Estonia, while we're still married under a joint property regime, can I sell 'my half' of the marital assets or force a division?",
+      "ground_truth": "No. Under Estonian Family Law Act Article 26, a spouse cannot dispose of his or her share in joint property or in a single object included in joint property. A spouse does not have the right to request the division of joint property during the jointness of property. Division can only occur after termination of the joint property relationship."
+    },
+    {
+      "id": 2,
+      "question": "My spouse and I want to change our matrimonial property regime in Italy. What form does the agreement need, and when does it bind third parties?",
+      "ground_truth": "The agreement must be concluded by public instrument or by declaration in the marriage certificate (Article 162), under penalty of nullity. The agreements may be concluded at any time. The agreement becomes binding on third parties once it is registered in the appropriate public registers."
+    },
+    {
+      "id": 3,
+      "question": "In Estonia, if I'm entitled to a compulsory portion, how big is it and what do I actually receive?",
+      "ground_truth": "Per Article 105, the compulsory portion is one-half of the value of the share you would have received in intestate succession. You receive a monetary claim, not specific assets. If bequeathed less, you may claim the deficit from co-successors. If given a smaller legacy, you may renounce it and claim the compulsory portion instead."
+    },
+    {
+      "id": 4,
+      "question": "If inherited real estate can't be divided conveniently among heirs, can the court order a public auction and split the proceeds?",
+      "ground_truth": "Yes. Per Estonian Article 159, an object that cannot be divided into physical shares shall be transferred to one successor. If successors fail to agree, the object shall be sold by public auction and the money divided in proportion to estate shares. Italian courts also order such sales in practice."
+    },
+    {
+      "id": 5,
+      "question": "I'm married under a community/joint property regime. Can I sell or gift my 'share' of the marital property while still married, if we're in Estonia vs. Slovenia?",
+      "ground_truth": "In both countries, NO. Estonia: Article 26 explicitly prohibits disposing of your share in joint property while married. Slovenia: Per Marriage Family Relations Act (Sections 51, 59), marital property is co-owned and any disposition requires mutual agreement of both spouses."
+    },
+    {
+      "id": 6,
+      "question": "My siblings and I inherited an apartment in Italy, but it can't be conveniently divided. What does the civil code say should happen, and do courts actually proceed with an auction sale?",
+      "ground_truth": "The Italian Civil Code provides for dissolution of community property when it cannot be divided. Courts do proceed with auction sales in practice, or assign the property to one heir with cash compensation to others. Proceeds are distributed according to each heir's share."
+    },
+    {
+      "id": 7,
+      "question": "In Slovenia, when can a spouse request judicial separation of assets? What are the legal triggers, and what can a court practically order in a real dispute?",
+      "ground_truth": "A spouse can request judicial separation during divorce proceedings when there are disputes over property. Courts can order: (1) 50/50 division of co-owned property; (2) registration of co-ownership rights within 15 days; (3) monetary compensation with interest; (4) execution of deeds. Based on Marriage Family Relations Act Sections 51 and 59."
+    },
+    {
+      "id": 8,
+      "question": "In civil law, what's the difference between a void contract and a voidable contract, and what are the consequences?",
+      "ground_truth": "OUT OF DOMAIN - General legal theory. Void contract: not enforceable from creation, no legal effect. Voidable contract: valid but may be annulled at one party's option; remains valid until voided."
+    },
+    {
+      "id": 9,
+      "question": "In civil law, what must be proven to establish non-contractual (tort) liability for negligence?",
+      "ground_truth": "OUT OF DOMAIN - General legal theory. Four elements: (1) Duty of Care; (2) Breach of Duty; (3) Causation (factual and legal); (4) Damages."
+    },
+    {
+      "id": 10,
+      "question": "In Estonia, if spouses have a claim owned jointly (e.g., a receivable), can it be set off during the property-division dispute? How does a court net amounts in practice?",
+      "ground_truth": "Yes, with conditions. Per Article 26, a jointly owned claim may be set off only against a claim prescribed by law or agreement. Per Article 53, if one spouse's assets are greater, half the difference belongs to the other as a financial claim. Courts deduct loan balances from property values, order compensation payments, and may deviate from equal division based on contributions (Article 56)."
+    }
+  ]
+}
