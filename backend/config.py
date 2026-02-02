@@ -41,7 +41,7 @@ class RAGConfig:
     llm_provider: str = "openrouter"
     # OpenRouter model format: provider/model (e.g., "openai/gpt-4o-mini", "anthropic/claude-3-haiku")
     # See https://openrouter.ai/models for available models
-    llm_model_name: str = "openai/gpt-oss-120b"
+    llm_model_name: str = os.getenv("MODEL_NAME")
 
     embedding_provider: str = "huggingface"
     embedding_model_name: str = "sentence-transformers/all-MiniLM-L6-v2"

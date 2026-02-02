@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import json
 import os
+from pathlib import Path
 from datasets import Dataset
 from dotenv import load_dotenv
 
@@ -17,8 +18,9 @@ from ragas.metrics import (
 from langchain_openai import ChatOpenAI
 from langchain_huggingface import HuggingFaceEmbeddings
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from project root
+env_path = Path(__file__).parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
 
 # OpenRouter API configuration
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
@@ -48,8 +50,12 @@ def get_evaluator_models():
         st.stop()
     
     # Use OpenRouter for LLM (OpenAI-compatible API)
+    model_name = os.getenv("MODEL_NAME", "openai/gpt-4o-mini")
+    if not model_name:
+        model_name = "openai/gpt-4o-mini"
+    
     evaluator_llm = ChatOpenAI(
-        model="openai/gpt-oss-120b",  # OpenRouter model format: provider/model
+        model=model_name,
         temperature=0,
         openai_api_key=api_key,
         openai_api_base=OPENROUTER_BASE_URL,
@@ -171,7 +177,7 @@ def prepare_ragas_dataset(evaluation_data_list):
 # Sidebar for metrics info
 with st.sidebar:
     st.header("⚙️ Configuration")
-    st.info("The system uses *OpenRouter (openai/gpt-4o-mini)* as judge.")
+    st.info(f"The system uses *OpenRouter ({os.getenv('MODEL_NAME')})* as judge.")
     st.markdown("---")
     st.markdown("##### Ragas Metrics:")
     st.markdown("Complete metrics are calculated only if *Ground Truth* is provided for at least one query.")
