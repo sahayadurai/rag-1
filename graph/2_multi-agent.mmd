@@ -1,0 +1,63 @@
+flowchart TD
+    subgraph Input["📥 Input"]
+        Q["User Question"]
+    end
+
+    subgraph Supervisor["👔 SUPERVISOR AGENT"]
+        subgraph Router["🔀 Step 1: Router"]
+            R1{"Is Legal Query?"}
+            R1 -->|"NO"| Direct["Direct Answer<br/>(Internal Knowledge)"]
+            R1 -->|"YES"| Route["Route to Sub-Agents"]
+        end
+
+        subgraph DBRoute["🗄️ Step 2: DB Assignment"]
+            ASSIGN["LLM assigns DBs<br/>to Sub-Agents"]
+        end
+    end
+
+    subgraph SubAgents["🤖 SUB-AGENTS (Parallel)"]
+        subgraph SA1["Sub-Agent: divorce_cases"]
+            SA1_R["Retrieve from<br/>divorce_cases"]
+            SA1_G["Generate<br/>Partial Answer"]
+            SA1_R --> SA1_G
+        end
+
+        subgraph SA2["Sub-Agent: divorce_codes"]
+            SA2_R["Retrieve from<br/>divorce_codes"]
+            SA2_G["Generate<br/>Partial Answer"]
+            SA2_R --> SA2_G
+        end
+
+        subgraph SA3["Sub-Agent: inheritance_*"]
+            SA3_R["Retrieve from<br/>inheritance DBs"]
+            SA3_G["Generate<br/>Partial Answer"]
+            SA3_R --> SA3_G
+        end
+    end
+
+    subgraph Synthesis["🔗 Step 3: Supervisor Synthesis"]
+        MERGE["Collect All<br/>Partial Answers"]
+        SYNTH["LLM Synthesizes<br/>Final Answer"]
+        MERGE --> SYNTH
+    end
+
+    subgraph Fallback["⚠️ Fallback"]
+        FB["If no sub-agents selected:<br/>Fall back to Single Agent<br/>over ALL DBs"]
+    end
+
+    subgraph Output["📤 Output"]
+        ANS["Final Synthesized Answer<br/>+ All Sources<br/>+ Reasoning Trace"]
+    end
+
+    Q --> R1
+    Route --> ASSIGN
+    ASSIGN --> SA1 & SA2 & SA3
+    SA1_G & SA2_G & SA3_G --> MERGE
+    ASSIGN -->|"NONE selected"| FB
+    FB --> ANS
+    SYNTH --> ANS
+    Direct --> ANS
+
+    style Supervisor fill:#e3f2fd
+    style SubAgents fill:#fff8e1
+    style Synthesis fill:#f3e5f5

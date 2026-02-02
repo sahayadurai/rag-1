@@ -1,0 +1,30 @@
+graph TB
+    subgraph Single["Single Agent (ReAct)"]
+        S1["1 Agent handles all"]
+        S2["LLM-based DB selection"]
+        S3["Retrieves from multiple DBs"]
+        S4["Single LLM answer generation"]
+        S1 --> S2 --> S3 --> S4
+    end
+
+    subgraph Multi["Multi-Agent (Supervisor)"]
+        M1["Supervisor coordinates"]
+        M2["LLM-based DB assignment"]
+        M3["N Sub-Agents (1 per DB)"]
+        M4["Each generates partial answer"]
+        M5["Supervisor synthesizes final"]
+        M1 --> M2 --> M3 --> M4 --> M5
+    end
+
+    subgraph Hybrid["Hybrid (Metadata + Vector)"]
+        H1["No ReAct loop"]
+        H2["LLM extracts metadata"]
+        H3["Heuristic DB selection"]
+        H4["Cascading filter fallbacks"]
+        H5["Single LLM answer"]
+        H1 --> H2 --> H3 --> H4 --> H5
+    end
+
+    style Single fill:#e8f5e9
+    style Multi fill:#e3f2fd
+    style Hybrid fill:#fff3e0

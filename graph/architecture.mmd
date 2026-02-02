@@ -1,0 +1,57 @@
+flowchart TB
+    subgraph UI["🖥️ Streamlit UI"]
+        Home["Home.py"]
+        Chatbot["pages/Chatbot.py"]
+        Eval["pages/Evaluation.py"]
+    end
+
+    subgraph Backend["⚙️ Backend"]
+        Pipeline["rag_pipeline.py<br/>(Router)"]
+        
+        subgraph Agents["Agent Modes"]
+            Single["rag_single_agent.py<br/>Single Agent (ReAct)"]
+            Multi["rag_multiagent.py<br/>Multi-Agent (Supervisor)"]
+            Hybrid["hybrid_rag.py<br/>Hybrid (Metadata+Vector)"]
+        end
+        
+        subgraph Core["Core Components"]
+            Config["config.py"]
+            LLM["llm_provider.py<br/>LLMBackend"]
+            Embed["embeddings.py"]
+            VStore["vector_store.py"]
+            Utils["rag_utils.py"]
+            DocLoader["document_loader.py"]
+        end
+    end
+
+    subgraph VectorDBs["📁 Vector Stores (FAISS)"]
+        DC["divorce_cases"]
+        DCode["divorce_codes"]
+        IC["inheritance_cases"]
+        ICode["inheritance_codes"]
+    end
+
+    subgraph External["🌐 External Services"]
+        OpenRouter["OpenRouter API<br/>(LLM)"]
+        HF["HuggingFace<br/>(Embeddings)"]
+    end
+
+    Chatbot --> Pipeline
+    Pipeline --> |"agentic_mode=react<br/>use_multiagent=false"| Single
+    Pipeline --> |"use_multiagent=true"| Multi
+    Pipeline --> |"agentic_mode=hybrid_rag"| Hybrid
+
+    Single --> Utils
+    Multi --> Utils
+    Multi --> Single
+    Hybrid --> VStore
+
+    Utils --> LLM
+    Utils --> Embed
+    Utils --> VStore
+
+    LLM --> OpenRouter
+    Embed --> HF
+    VStore --> VectorDBs
+
+    Eval --> |"RAGAS Metrics"| OpenRouter

@@ -1,0 +1,57 @@
+sequenceDiagram
+    participant U as 👤 User
+    participant UI as 🖥️ Chatbot.py
+    participant P as 📡 rag_pipeline.py
+    participant S as 🤖 Single Agent
+    participant M as 👔 Multi-Agent
+    participant H as 🏷️ Hybrid
+    participant LLM as 🧠 OpenRouter LLM
+    participant VS as 📁 Vector Store
+
+    U->>UI: Ask question
+    UI->>P: answer_question(question, config)
+    
+    alt agentic_mode = "hybrid_rag"
+        P->>H: hybrid_answer_question()
+        H->>LLM: Extract metadata (JSON)
+        LLM-->>H: {law, country, doc_type...}
+        H->>VS: Search with metadata filters
+        VS-->>H: Filtered documents
+        H->>LLM: Generate answer
+        LLM-->>H: Answer
+        H-->>P: (answer, docs, trace, metadata)
+    else use_multiagent = true
+        P->>M: multiagent_answer_question()
+        M->>LLM: Router: Legal query?
+        LLM-->>M: YES
+        M->>LLM: Select DBs for sub-agents
+        LLM-->>M: [divorce_cases, divorce_codes]
+        
+        par Sub-Agent Execution
+            M->>VS: Sub-Agent 1: Query DB1
+            VS-->>M: docs1
+            M->>LLM: Generate partial answer 1
+        and
+            M->>VS: Sub-Agent 2: Query DB2
+            VS-->>M: docs2
+            M->>LLM: Generate partial answer 2
+        end
+        
+        M->>LLM: Supervisor: Synthesize answers
+        LLM-->>M: Final synthesized answer
+        M-->>P: (answer, all_docs, trace)
+    else Single Agent (default)
+        P->>S: single_agent_answer_question()
+        S->>LLM: Router: Legal query?
+        LLM-->>S: YES
+        S->>LLM: Select which DBs
+        LLM-->>S: [db1, db2]
+        S->>VS: Retrieve from selected DBs
+        VS-->>S: documents
+        S->>LLM: Generate answer with context
+        LLM-->>S: Answer
+        S-->>P: (answer, docs, trace)
+    end
+    
+    P-->>UI: (answer, docs, reasoning, metadata)
+    UI-->>U: Display answer + sources

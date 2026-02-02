@@ -1,0 +1,53 @@
+flowchart TD
+    subgraph Input["📥 Input"]
+        Q["User Question"]
+    end
+
+    subgraph Router["🔀 Step 1: Router Decision"]
+        R1{"LLM Router:<br/>Is this a Legal Query?<br/>(Divorce/Inheritance<br/>in IT/EE/SI)"}
+        R1 -->|"YES"| Legal["LEGAL QUERY<br/>→ Proceed to Retrieval"]
+        R1 -->|"NO"| General["GENERAL/CHITCHAT<br/>→ Direct Answer"]
+    end
+
+    subgraph DBSelect["🗄️ Step 2: DB Selection"]
+        DBS{"LLM DB Selector:<br/>Which DBs to search?"}
+        DBS --> DB1["divorce_cases"]
+        DBS --> DB2["divorce_codes"]
+        DBS --> DB3["inheritance_cases"]
+        DBS --> DB4["inheritance_codes"]
+    end
+
+    subgraph Retrieval["🔍 Step 3: Retrieval"]
+        MF["Extract Metadata Filters<br/>(country, law)"]
+        MF --> VR["Vector Search<br/>per selected DB<br/>(k=top_k)"]
+        VR --> Rerank{"use_rerank?"}
+        Rerank -->|"YES"| SIM["Cosine Similarity<br/>Reranking"]
+        Rerank -->|"NO"| TOP["Take top_k_final<br/>raw docs"]
+        SIM --> FINAL["Final Documents<br/>(top_k_final)"]
+        TOP --> FINAL
+    end
+
+    subgraph Context["📄 Step 4: Context Building"]
+        CTX["_build_context()<br/>Format docs with metadata:<br/>[DB: X] [Country: Y] [Law: Z]"]
+    end
+
+    subgraph Generation["💬 Step 5: Answer Generation"]
+        GEN["LLM Generate Answer<br/>using retrieved context"]
+    end
+
+    subgraph Output["📤 Output"]
+        ANS["Answer + Sources +<br/>Reasoning Trace"]
+    end
+
+    Q --> R1
+    Legal --> DBS
+    General --> GEN
+    DB1 & DB2 & DB3 & DB4 --> MF
+    FINAL --> CTX
+    CTX --> GEN
+    GEN --> ANS
+
+    style Router fill:#e1f5fe
+    style DBSelect fill:#fff3e0
+    style Retrieval fill:#e8f5e9
+    style Generation fill:#fce4ec

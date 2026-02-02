@@ -1,0 +1,70 @@
+flowchart TD
+    subgraph Input["📥 Input"]
+        Q["User Question"]
+    end
+
+    subgraph MetaExtract["🏷️ Step 1: LLM Metadata Extraction"]
+        SCHEMA["LEGAL_METADATA_SCHEMA<br/>(17+ fields)"]
+        CLASSIFY["_classify_law()<br/>Inheritance vs Divorce"]
+        EXTRACT["LLM extracts JSON:<br/>• law (mandatory)<br/>• country<br/>• doc_type<br/>• cost, duration, etc."]
+        SCHEMA --> EXTRACT
+        CLASSIFY --> EXTRACT
+    end
+
+    subgraph DBRoute["🗄️ Step 2: Heuristic DB Selection"]
+        HEUR["_heuristic_db_candidates()<br/>Match law + doc_type<br/>to DB names"]
+        HEUR -->|"law=Divorce"| D_DBS["divorce_cases<br/>divorce_codes"]
+        HEUR -->|"law=Inheritance"| I_DBS["inheritance_cases<br/>inheritance_codes"]
+        HEUR -->|"doc_type=case"| CASE["*_cases DBs"]
+        HEUR -->|"doc_type=code"| CODE["*_codes DBs"]
+    end
+
+    subgraph Retrieval["🔍 Step 3: Cascading Retrieval"]
+        subgraph Filters["Metadata Filters"]
+            F1["Primary: Full Filter<br/>(law + country + doc_type)"]
+            F2["Fallback-1: law + country"]
+            F3["Fallback-2: law only"]
+        end
+
+        VEC["Vector Search<br/>with filter applied"]
+        CHECK{"Got enough<br/>docs?"}
+        
+        F1 --> VEC
+        VEC --> CHECK
+        CHECK -->|"NO, < top_k"| F2
+        F2 --> VEC
+        CHECK -->|"NO, < top_k"| F3
+        F3 --> VEC
+        CHECK -->|"YES"| DOCS["Final Documents"]
+    end
+
+    subgraph Rerank["📊 Step 4: Optional Reranking"]
+        RR{"use_rerank?"}
+        RR -->|"YES"| SIM["Cosine Similarity<br/>Reranking"]
+        RR -->|"NO"| PASS["Pass through"]
+    end
+
+    subgraph Generation["💬 Step 5: Answer Generation"]
+        META_TXT["Metadata as Text:<br/>law: Divorce; country: ITALY..."]
+        CTX["Retrieved Context"]
+        GEN["LLM Generate Answer<br/>using metadata constraints<br/>+ retrieved docs"]
+    end
+
+    subgraph Output["📤 Output"]
+        ANS["Answer + Sources +<br/>Extracted Metadata +<br/>Reasoning Trace"]
+    end
+
+    Q --> CLASSIFY
+    EXTRACT --> HEUR
+    D_DBS & I_DBS --> F1
+    DOCS --> RR
+    SIM & PASS --> CTX
+    EXTRACT --> META_TXT
+    META_TXT --> GEN
+    CTX --> GEN
+    GEN --> ANS
+
+    style MetaExtract fill:#e8eaf6
+    style DBRoute fill:#fff3e0
+    style Retrieval fill:#e0f2f1
+    style Generation fill:#fce4ec

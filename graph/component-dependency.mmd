@@ -1,0 +1,62 @@
+graph LR
+    subgraph Entry["Entry Points"]
+        CP["Chatbot.py"]
+        EP["Evaluation.py"]
+    end
+
+    subgraph Pipeline["Pipeline Layer"]
+        RP["rag_pipeline.py"]
+    end
+
+    subgraph Agents["Agent Layer"]
+        SA["rag_single_agent.py"]
+        MA["rag_multiagent.py"]
+        HA["hybrid_rag.py"]
+    end
+
+    subgraph Utils["Utility Layer"]
+        RU["rag_utils.py"]
+    end
+
+    subgraph Core["Core Layer"]
+        CFG["config.py"]
+        LLM["llm_provider.py"]
+        EMB["embeddings.py"]
+        VS["vector_store.py"]
+        DL["document_loader.py"]
+    end
+
+    subgraph External["External"]
+        OR["OpenRouter API"]
+        HF["HuggingFace"]
+        FAISS["FAISS DBs"]
+    end
+
+    CP --> RP
+    EP --> OR
+
+    RP --> SA
+    RP --> MA
+    RP --> HA
+
+    MA --> SA
+    SA --> RU
+    MA --> RU
+    HA --> VS
+
+    RU --> LLM
+    RU --> EMB
+    RU --> VS
+
+    SA --> CFG
+    MA --> CFG
+    HA --> CFG
+
+    LLM --> OR
+    EMB --> HF
+    VS --> FAISS
+    DL --> CFG
+
+    style Agents fill:#e3f2fd
+    style Core fill:#f5f5f5
+    style External fill:#fff3e0
