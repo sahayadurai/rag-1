@@ -1,0 +1,227 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║         AGENTIC RAG PROJECT - PERFORMANCE METRICS SUMMARY                    ║
+║                        February 23, 2026                                     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+PROJECT OVERVIEW
+────────────────────────────────────────────────────────────────────────────────
+• Domain:        Legal Document Analysis (Inheritance & Divorce Law)
+• Jurisdictions: Estonia, Italy, Slovenia
+• Evaluation:    RAGAS Framework on top-10 retrieved documents
+• Test Set:      30 QA pairs (10 per agent type)
+• LLM Used:      OpenAI GPT-4o-mini (temp=0.2, via OpenRouter)
+• Embeddings:    sentence-transformers/all-MiniLM-L6-v2 (384D, CPU)
+
+THREE AGENT TYPES EVALUATED
+────────────────────────────────────────────────────────────────────────────────
+
+1. SINGLE AGENT RAG - Standard Retrieval + Generation
+   └─ Status: ✓ PRODUCTION READY
+   
+   Metrics:
+   ├─ context_precision:   0.800  ✓ (Good precision)
+   ├─ context_recall:      0.767  ✓ (Best recall)
+   ├─ faithfulness:        0.827  ⭐ (BEST - 82.7% grounded in context)
+   ├─ answer_relevancy:    0.798  ✓ (Good relevancy)
+   └─ answer_correctness:  0.708  ⭐ (BEST - 70.8% accurate)
+   
+   Score: 0.78 / 1.00 (78%)
+   Workflow: Question → Embeddings → Vector Search → Similarity Filter → LLM
+
+─────────────────────────────────────────────────────────────────────────────────
+
+2. MULTI-AGENT RAG - Supervisor Routing + Synthesis
+   └─ Status: ⚠️ EXPERIMENTAL (Hallucination Issue)
+   
+   Metrics:
+   ├─ context_precision:   0.800  ✓ (Good precision)
+   ├─ context_recall:      0.700  ○ (Lost 6.7% vs Single)
+   ├─ faithfulness:        0.558  ✗ (CRITICAL - Lost 27% vs Single!)
+   ├─ answer_relevancy:    0.827  ⭐ (BEST - Best at question intent)
+   └─ answer_correctness:  0.706  ○ (Comparable to Single)
+   
+   Score: 0.72 / 1.00 (72%)
+   Workflow: Question → Supervisor Routes → Sub-Agents → Synthesis
+
+   🔴 KEY ISSUE: Supervisor synthesis adds unsupported claims
+       Recommendation: Constrain synthesis to aggregation only
+
+─────────────────────────────────────────────────────────────────────────────────
+
+3. HYBRID LEGAL RAG - Metadata-Aware Retrieval + Schema Validation
+   └─ Status: ⏸️ SHELVED (Over-Constrained)
+   
+   Metrics:
+   ├─ context_precision:   0.800  ✓ (Good precision)
+   ├─ context_recall:      0.667  ✗ (Lost 10% vs Single - too aggressive filtering)
+   ├─ faithfulness:        0.685  ○ (Moderate)
+   ├─ answer_relevancy:    0.626  ✗ (Too narrow scope)
+   └─ answer_correctness:  0.646  ✗ (LOWEST)
+   
+   Score: 0.68 / 1.00 (68%)
+   Workflow: Question → Metadata Extract → Filter → Re-rank → LLM
+
+   🟡 KEY ISSUE: Hard metadata filtering too aggressive
+       Recommendation: Switch to soft filtering (scoring signal, not hard filter)
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    COMPARATIVE PERFORMANCE ANALYSIS                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+METRIC RANKINGS
+────────────────────────────────────────────────────────────────────────────────
+
+context_precision: 0.800
+├─ 🥇 Single:  0.800 ├─ 🥇 Multi:   0.800 ├─ 🥇 Hybrid: 0.800
+└─ Finding: All agents retrieve equally relevant documents
+            → Embedding quality is not the limiting factor
+
+context_recall: 0.767 to 0.667
+├─ 🥇 Single:  0.767 ├─ 🥈 Multi:   0.700 ├─ 🥉 Hybrid: 0.667
+└─ Finding: Filtering (routing, metadata) reduces coverage
+            → 10% loss from Single to Hybrid due to hard filters
+
+faithfulness: 0.827 to 0.558
+├─ 🥇 Single:  0.827 ├─ 🥉 Multi:   0.558 ├─ 🥈 Hybrid: 0.685
+│                     │                     │
+│                     └─ ⚠️ CRITICAL ISSUE! Synthesis adds hallucinations
+└─ Finding: Simple approaches are grounded; complex synthesis drifts from context
+            → 27% gap indicates architectural problem, not training issue
+
+answer_relevancy: 0.827 to 0.626
+├─ 🥇 Multi:   0.827 ├─ 🥈 Single:  0.798 ├─ 🥉 Hybrid: 0.626
+│                     │
+│                     └─ Single strong but Multi wins (routing captures intent better)
+└─ Finding: Explicit routing understands question scope better
+            → Metadata constraints narrow scope too much (Hybrid)
+
+answer_correctness: 0.708 to 0.646
+├─ 🥇 Single:  0.708 ├─ 🥈 Multi:   0.706 ├─ 🥉 Hybrid: 0.646
+└─ Finding: Simplicity correlates with accuracy
+            → Over-engineering (Hybrid schema) reduces correctness
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                           KEY FINDINGS & INSIGHTS                            ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+✓ FINDING 1: SIMPLICITY WINS
+  Single Agent outperforms more complex architectures
+  • Highest faithfulness (0.827 vs 0.558/0.685)
+  • Highest correctness (0.708 vs 0.706/0.646)
+  • Fewer failure modes, easier to debug
+
+✗ FINDING 2: SYNTHESIS IS RISKY
+  Multi-Agent supervisor synthesis causes hallucination
+  • Faithfulness drops 27% (0.827 → 0.558)
+  • Root cause: Supervisor fills gaps with generated claims not in retrieved docs
+  • Fix: Constrain synthesis to aggregation only; flag unsupported statements
+
+✗ FINDING 3: HARD FILTERS HURT RECALL
+  Hybrid's metadata filtering reduces recall
+  • Recall drops 10% (0.767 → 0.667)
+  • Root cause: Valid documents filtered out by schema constraints
+  • Fix: Use metadata as ranking signal, not hard filter; implement fallback
+
+✓ FINDING 4: EMBEDDING QUALITY IS NOT THE BOTTLENECK
+  All agents achieve same precision (0.800)
+  • Initial retrieval equally good across all approaches
+  • Performance divergence is in synthesis/generation, not retrieval
+  • Implication: Don't upgrade embeddings; fix architecture instead
+
+◇ FINDING 5: LEGAL DOMAIN IS CHALLENGING
+  Even best agent only 70.8% correct
+  • Legal reasoning requires knowledge + context
+  • Some questions inherently ambiguous
+  • Trade-off: Can achieve 70%+ without fine-tuning; need domain-specific tuning for 90%+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        IMMEDIATE RECOMMENDATIONS                             ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+PRODUCTION DEPLOYMENT
+────────────────────────────────────────────────────────────────────────────────
+✓ DEPLOY:   Single Agent RAG (score: 0.78, faithfulness: 0.827)
+⚠️ MONITOR: Multi-Agent (experimental only, faithfulness: 0.558)
+⏸️ SHELVE:  Hybrid Legal (pending redesign, correctness: 0.646)
+
+THREE-MONTH ROADMAP
+────────────────────────────────────────────────────────────────────────────────
+WEEK 1:   Deploy Single Agent for production use
+WEEKS 2-3: Multi-Agent architectural review & redesign
+WEEKS 3-4: Hybrid Legal soft-filtering implementation
+WEEKS 4+: Extended evaluation & performance analysis
+
+ONE-YEAR VISION
+────────────────────────────────────────────────────────────────────────────────
+• Hybrid Ensemble: Combine all three with learned weighting
+• Domain Fine-tuning: Custom embeddings & LLM for legal domain
+• Constrained Multi-Agent: Formal verification of synthesis
+• Target: All metrics ≥ 0.80 (up from current 0.708-0.827 range)
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                      CONFIGURATION PARAMETERS                                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+LLM Configuration:
+├─ Provider:        OpenRouter (OpenAI-compatible API)
+├─ Model:           openai/gpt-4o-mini
+├─ Temperature:     0.2 (low randomness, deterministic)
+├─ Max Tokens:      512
+└─ Base URL:        https://openrouter.ai/api/v1
+
+Embedding Configuration:
+├─ Provider:        HuggingFace
+├─ Model:           sentence-transformers/all-MiniLM-L6-v2
+├─ Dimension:       384 (vs 1536 for larger models)
+├─ Device:          CPU (forced, for reproducibility)
+└─ Normalization:   L2 (on) for cosine similarity
+
+Retrieval Configuration:
+├─ Top-K:           10 documents
+├─ Similarity Threshold: 0.1 (filter very poor matches)
+├─ Context Window:  4000 characters
+├─ Vector Store:    FAISS
+└─ Re-ranking:      Disabled
+
+Data Corpus:
+├─ Jurisdictions:   Estonia, Italy, Slovenia
+├─ Legal Domains:   Divorce (30+ articles), Inheritance (30+ articles)
+├─ Total Documents: 200+ articles + case law database
+└─ Vector Stores:   3 separate FAISS indexes (general, divorce, inheritance)
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        SUPPORTING DOCUMENTATION                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📄 FILE LOCATIONS
+────────────────────────────────────────────────────────────────────────────────
+• report/report.md           - 25KB, 692 lines, comprehensive technical report
+• report/slide.md            - 18KB, 2400+ lines, 24 presentation slides
+• report/README.md           - 8.6KB, quick reference & navigation guide
+• report/METRICS_SUMMARY.txt - This file
+
+📊 RAW METRICS
+────────────────────────────────────────────────────────────────────────────────
+• report/chat_single_10_ragas  - Raw scores: Single Agent RAG
+• report/chat_multi_10_ragas   - Raw scores: Multi-Agent RAG
+• report/chat_hybrid_10_ragas  - Raw scores: Hybrid Legal RAG
+
+📚 RECOMMENDED READING ORDER
+────────────────────────────────────────────────────────────────────────────────
+For Executive Summary:
+1. This file (METRICS_SUMMARY.txt) - 5 min
+2. report/slide.md Slides 1-7, 14-15, 21 - 15 min
+
+For Technical Deep-Dive:
+1. report/report.md Executive Summary + Findings - 20 min
+2. report/report.md Agent Workflows + Config - 30 min
+3. report/report.md Performance Analysis - 20 min
+
+For Implementation:
+1. report/slide.md Slides 12, 24 (Config & Code) - 10 min
+2. report/report.md Recommendations section - 15 min
+3. report/slide.md Slide 20 (Roadmap) - 10 min
+
+════════════════════════════════════════════════════════════════════════════════
+Generated: February 23, 2026 | Evaluation Period: 30 QA pairs | Status: Complete
+════════════════════════════════════════════════════════════════════════════════
